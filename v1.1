@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#说明：倾斜传感器
+#   S接GPIO19，中间姐GND，右边接3.3v（如板载1号、板载17号）
+#   灯接GPIO21
+#   效果：
+#       按一下亮，再按一下，灭
+#   此代码同样适用于倾斜传感器
+####################################################
+import RPi.GPIO as GPIO
+import time
+
+pin_button = 19
+pin_led = 21
+delaySec = 0.01
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(pin_button, GPIO.IN)
+GPIO.setup(pin_led, GPIO.OUT)
+
+def destroy():
+    GPIO.output(pin_led, GPIO.LOW)
+    GPIO.cleanup()
+    print('end')
+
+def showResult():
+    click_count = 0
+    input_result_next = 0
+    while True:        
+        input_result = GPIO.input(pin_button) 
+        if input_result_next != input_result&input_result==1:
+            click_count = click_count+1
+            # print('click',click_count)
+            print('按下',input_result)            
+        if input_result_next != input_result&input_result==0:
+            print('松开',input_result)            
+        GPIO.output(pin_led, click_count%2)    
+        time.sleep(delaySec)
+        input_result_next = input_result
+
+if __name__ == "__main__":
+    try:
+        showResult()
+    except KeyboardInterrupt:
+        destroy()
